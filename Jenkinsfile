@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     triggers {
-        githubPush()
+        pollSCM('H/5 * * * *')
     }
 
     
@@ -51,6 +51,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh 'docker compose down || true'
+                sh 'docker system prune -f || true'
+                sh 'fuser -k 5000/tcp || true'
+                sh 'fuser -k 5173/tcp || true'
+                sh 'sleep 5'
                 sh 'docker compose up -d --build'
             }
         }
